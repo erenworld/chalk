@@ -24,6 +24,17 @@ const (
 )
 
 const (
+	BgBlack Parameter = iota + 40
+	BgRed
+    BgGreen
+    BgYellow
+    BgBlue
+    BgMagenta
+    BgCyan
+    BgWhite
+)
+
+const (
 	Reset Parameter = iota
 	Bold
 	Faint
