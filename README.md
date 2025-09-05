@@ -1,5 +1,5 @@
 # Chalk
-[chalk](https://davidwalsh.name/demo/chalk-example.png)
+![chalk](https://davidwalsh.name/demo/chalk-example.png)
 
 ## API
 We use ANSI SGR for personalized color.
