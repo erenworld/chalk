@@ -12,7 +12,7 @@ go get github.com/erenworld/chalk
 
 ## Examples
 
-# Standard colors
+### Standard colors
 
 ```go
 // Print with default foreground colors
@@ -24,7 +24,7 @@ color.Green.Add(color.Bold).Println("Green with bold")
 color.Red.Add(color.BgWhite, color.Underline).Printf("Red with Black background and underscore: %s\n", "format too!")
 ```
 
-# Custom colors
+### Custom colors
 
 ```go
 // Create and reuse color objects

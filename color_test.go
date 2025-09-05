@@ -14,19 +14,19 @@ func TestColor(t *testing.T) {
 	Red.Add(BgWhite, Underline).Printf("Red with White background and underscore: %s\n", "format too!")
 
 	c := Cyan.Add(Underline)
-	c.Println("Prints bold cyan.")
-	c.Printf("Thir prints bold cyan %s\n", "too!.")
+	c.Println("Prints cyan text with an underline.")
+	c.Printf("This prints bold cyan %s\n", "too!.")
 
 	// Create custom color objects:
-	d := New(FgGreen, BgCyan, Italic)
-	d.Print("Italic green with cyan background")
+	d := New(FgWhite, BgGreen)
+	d.Println("White with green bg")
 
-	Cyan.Set()
-	fmt.Println("Existing text in your codebase will be now in Cyan")
+	Yellow.Set()
+	fmt.Println("Existing text in your codebase will be now in Yellow")
 	fmt.Printf("This one %s\n", "too")
 	Unset()
 
-	New(FgBlack, BgWhite, Bold).Set()
+	New(FgMagenta, Bold).Set()
 	defer Unset()
 
 	fmt.Println("All text will be now bold red with white background.")
