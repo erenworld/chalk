@@ -18,7 +18,7 @@ const (
 	FgGreen
 	FgYellow
 	FgBlue
-	FgMagent
+	FgMagenta
 	FgCyan
 	FgWhite
 )
@@ -48,14 +48,14 @@ const (
 )
 
 var (
-	Black  = &Color{params: []Parameter{FgBlack}}
-	Red    = &Color{params: []Parameter{FgRed}}
-	Green  = &Color{params: []Parameter{FgGreen}}
-	Yellow = &Color{params: []Parameter{FgYellow}}
-	Blue   = &Color{params: []Parameter{FgBlue}}
-	Magent = &Color{params: []Parameter{FgMagent}}
-	Cyan   = &Color{params: []Parameter{FgCyan}}
-	White  = &Color{params: []Parameter{FgWhite}}
+	Black   = &Color{params: []Parameter{FgBlack}}
+	Red     = &Color{params: []Parameter{FgRed}}
+	Green   = &Color{params: []Parameter{FgGreen}}
+	Yellow  = &Color{params: []Parameter{FgYellow}}
+	Blue    = &Color{params: []Parameter{FgBlue}}
+	Magenta = &Color{params: []Parameter{FgMagenta}}
+	Cyan    = &Color{params: []Parameter{FgCyan}}
+	White   = &Color{params: []Parameter{FgWhite}}
 )
 
 func New(value ...Parameter) *Color {
