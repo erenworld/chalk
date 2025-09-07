@@ -2,6 +2,8 @@ package chalk
 
 import (
 	"fmt"
+	"io"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -9,6 +11,8 @@ import (
 type Color struct {
 	params []Parameter
 }
+
+const escape = "\x1b" 
 
 type Parameter int
 
@@ -58,6 +62,8 @@ var (
 	White   = &Color{params: []Parameter{FgWhite}}
 )
 
+var Output io.Writer = os.Stdout
+
 func New(value ...Parameter) *Color {
 	c := &Color{params: make([]Parameter, 0)}
 	c.Add(value...)
@@ -86,7 +92,7 @@ func (c *Color) Printf(format string, a ...interface{}) (n int, err error) {
 	c.Set()
 	defer Unset()
 
-	return fmt.Printf(format, a...)
+	return fmt.Fprintf(Output, format, a...)
 }
 
 // Print formats using the default formats for its operands and writes to
@@ -97,7 +103,7 @@ func (c *Color) Print(a ...interface{}) (n int, err error) {
 	c.Set()
 	defer Unset()
 
-	return fmt.Print(a...)
+	return fmt.Fprint(Output, a...)
 }
 
 // Println formats using the default formats for its operands and writes to
@@ -105,10 +111,10 @@ func (c *Color) Print(a ...interface{}) (n int, err error) {
 // appended. It returns the number of bytes written and any write error
 // encountered.
 func (c *Color) Println(a ...interface{}) (n int, err error) {
-	c.Set()
-	defer Unset()
+	c.Set() 		// applique "\033[31m"
+	defer Unset()	// à la fin, applique "\033[0m"
 
-	return fmt.Println(a...)
+	return fmt.Fprintln(Output, a...)
 }
 
 // sequence returns a formated SGR sequence to be plugged into a "\033[...m"
@@ -124,9 +130,9 @@ func (c *Color) sequence() string {
 
 // Set sets the SGR sequence.
 func (c *Color) Set() {
-	fmt.Printf("\033[%sm", c.sequence())
+	fmt.Fprintf(Output, "%s[%sm", escape, c.sequence())
 }
 
 func Unset() {
-	fmt.Print("\033[0m")
+	fmt.Fprintf(Output, "%s[%dm", escape, Reset)
 }
