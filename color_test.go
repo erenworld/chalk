@@ -1,13 +1,47 @@
 package chalk
 
 import (
+	"bytes"
 	"fmt"
+	"os"
 	"testing"
 )
 
 func TestColor(t *testing.T) {
-	Cyan.Print("Prints text in cyan.")
-	Blue.Print("Prints text in blue.")
+	rb := new(bytes.Buffer)
+	Output = rb
+
+	testColors := []struct {
+		text string
+		code Parameter
+	}{
+		{text: "black", code: FgBlack},
+		{text: "red", code: FgRed},
+		{text: "green", code: FgGreen},
+		{text: "yellow", code: FgYellow},
+		{text: "blue", code: FgBlue},
+		{text: "magent", code: FgMagenta},
+		{text: "cyan", code: FgCyan},
+		{text: "white", code: FgWhite},
+	}
+
+	for _, c := range testColors {
+		New(c.code).Print(c.text)
+
+		line, _ := rb.ReadString('\n')
+		scannedLine := fmt.Sprintf("%q", line)
+		colored := fmt.Sprintf("\x1b[%dm%s\x1b[0m", c.code, c.text)
+		escapedForm := fmt.Sprintf("%q", colored)
+
+		fmt.Printf("%s\t: %s\n", c.text, line)
+
+		if scannedLine != escapedForm {
+			t.Errorf("Expecting %s, got '%s'\n", escapedForm, scannedLine)
+		}
+	}
+
+	fmt.Println("")
+	Output = os.Stdout
 
 	New(FgRed).Printf("red\t")
 	New(BgRed).Print("         ")
