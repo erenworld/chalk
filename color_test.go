@@ -9,25 +9,40 @@ func TestColor(t *testing.T) {
 	Cyan.Print("Prints text in cyan.")
 	Blue.Print("Prints text in blue.")
 
-	// Chain SGR parameters
-	Green.Add(Bold).Println("Green with bold.")
-	Red.Add(BgWhite, Underline).Printf("Red with White background and underscore: %s\n", "format too!")
+	New(FgRed).Printf("red\t")
+	New(BgRed).Print("         ")
+	New(FgRed, Bold).Println(" red")
 
-	c := Cyan.Add(Underline)
-	c.Println("Prints cyan text with an underline.")
-	c.Printf("This prints bold cyan %s\n", "too!.")
+	New(FgGreen).Printf("green\t")
+	New(BgGreen).Print("         ")
+	New(FgGreen, Bold).Println(" green")
 
-	// Create custom color objects:
-	d := New(FgWhite, BgGreen)
-	d.Println("White with green bg")
+	New(FgYellow).Printf("yellow\t")
+	New(BgYellow).Print("         ")
+	New(FgYellow, Bold).Println(" yellow")
 
-	Yellow.Set()
-	fmt.Println("Existing text in your codebase will be now in Yellow")
-	fmt.Printf("This one %s\n", "too")
-	Unset()
+	New(FgBlue).Printf("blue\t")
+	New(BgBlue).Print("         ")
+	New(FgBlue, Bold).Println(" blue")
+
+	New(FgMagenta).Printf("magenta\t")
+	New(BgMagenta).Print("         ")
+	New(FgMagenta, Bold).Println(" magenta")
+
+	New(FgCyan).Printf("cyan\t")
+	New(BgCyan).Print("         ")
+	New(FgCyan, Bold).Println(" cyan")
+
+	New(FgWhite).Printf("white\t")
+	New(BgWhite).Print("         ")
+	New(FgWhite, Bold).Println(" white")
+
+	fmt.Println("")
+
+	c := New(FgRed).Add(Underline)
+	c.Println("Prints red text with an underline.")
 
 	New(FgMagenta, Bold).Set()
 	defer Unset()
-
-	fmt.Println("All text will be now bold red with white background.")
+	fmt.Println("All text will be now bold magenta.")
 }
