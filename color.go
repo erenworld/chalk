@@ -1,3 +1,5 @@
+// Package color is an ANSI color package to output colorized or SGR defined
+// outputs to the standard output.
 package chalk
 
 import (
@@ -16,6 +18,18 @@ const escape = "\x1b"
 
 type Parameter int
 
+const (
+	Reset Parameter = iota
+	Bold
+	Faint
+	Italic
+	Underline
+	BlinkSlow
+	BlinkRapid
+	ReverseVideo
+	Concealed
+	CrossedOut
+)
 const (
 	FgBlack Parameter = iota + 30
 	FgRed
@@ -38,22 +52,9 @@ const (
     BgWhite
 )
 
-const (
-	Reset Parameter = iota
-	Bold
-	Faint
-	Italic
-	Underline
-	BlinkSlow
-	BlinkRapid
-	ReverseVideo
-	Concealed
-	CrossedOut
-)
 
 var (
 	Black   = &Color{params: []Parameter{FgBlack}}
-	Red     = &Color{params: []Parameter{FgRed}}
 	Green   = &Color{params: []Parameter{FgGreen}}
 	Yellow  = &Color{params: []Parameter{FgYellow}}
 	Blue    = &Color{params: []Parameter{FgBlue}}
@@ -64,6 +65,18 @@ var (
 
 var Output io.Writer = os.Stdout
 
+// Red is an convenient helper function to print with red foreground.
+func Red(format string, a ...interface{}) {
+	if !strings.HasSuffix(format, "\n") {
+		format += "\n"
+	}
+
+	c := &Color{params: []Parameter{FgRed}}
+	c.Printf(format, a...)
+
+}
+
+// New returns a newly created color object.
 func New(value ...Parameter) *Color {
 	c := &Color{params: make([]Parameter, 0)}
 	c.Add(value...)
@@ -75,6 +88,8 @@ func (c *Color) Bold() *Color {
 	return c
 }
 
+// Add is used to chain SGR parameters. Use as many as paramters to combine
+// and create custom color objects. Example: Add(color.FgRed, color.Underline)
 func (c *Color) Add(value ...Parameter) *Color {
 	c.params = append(c.params, value...)
 	return c
@@ -117,7 +132,7 @@ func (c *Color) Println(a ...interface{}) (n int, err error) {
 	return fmt.Fprintln(Output, a...)
 }
 
-// sequence returns a formated SGR sequence to be plugged into a "\033[...m"
+// sequence returns a formated SGR sequence to be plugged into a "\x1b[...m"
 // an example output might be: "1;36" -> bold cyan
 func (c *Color) sequence() string {
 	format := make([]string, len(c.params))
