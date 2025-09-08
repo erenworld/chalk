@@ -1,5 +1,5 @@
 // Package color is an ANSI color package to output colorized or SGR defined
-// outputs to the standard output.
+// output to the standard output.
 package chalk
 
 import (
@@ -54,7 +54,6 @@ const (
 
 
 var (
-	Black   = &Color{params: []Parameter{FgBlack}}
 	Green   = &Color{params: []Parameter{FgGreen}}
 	Yellow  = &Color{params: []Parameter{FgYellow}}
 	Blue    = &Color{params: []Parameter{FgBlue}}
@@ -63,18 +62,24 @@ var (
 	White   = &Color{params: []Parameter{FgWhite}}
 )
 
+// Output defines the standard output of the print functions. By default
+// os.Stdout is used.
 var Output io.Writer = os.Stdout
 
-// Red is an convenient helper function to print with red foreground.
-func Red(format string, a ...interface{}) {
+func printColor(format string, p Parameter, a ...interface{}) {
 	if !strings.HasSuffix(format, "\n") {
 		format += "\n"
 	}
 
-	c := &Color{params: []Parameter{FgRed}}
+	c := &Color{params: []Parameter{p}}
 	c.Printf(format, a...)
-
 }
+
+// Red is an convenient helper function to print with red foreground.
+func Red(format string, a ...interface{}) { printColor(format, FgRed, a...) }
+
+// Black is an convenient helper function to print with black foreground.
+func Black(format string, a ...interface{}) { printColor(format, FgBlack, a...) }
 
 // New returns a newly created color object.
 func New(value ...Parameter) *Color {
@@ -95,14 +100,9 @@ func (c *Color) Add(value ...Parameter) *Color {
 	return c
 }
 
-func (c *Color) prepend(value Parameter) {
-	c.params = append(c.params, 0)
-	copy(c.params[1:], c.params[0:])
-	c.params[0] = value
-}
-
 // Printf formats according to a format specifier and writes to standard output.
 // It returns the number of bytes written and any write error encountered.
+// Standard fmt.PrintF() method wrapped with the given color.
 func (c *Color) Printf(format string, a ...interface{}) (n int, err error) {
 	c.Set()
 	defer Unset()
@@ -114,6 +114,7 @@ func (c *Color) Printf(format string, a ...interface{}) (n int, err error) {
 // standard output. Spaces are added between operands when neither is a
 // string. It returns the number of bytes written and any write error
 // encountered.
+// Standard fmt.Print() method wrapped with the given color.
 func (c *Color) Print(a ...interface{}) (n int, err error) {
 	c.Set()
 	defer Unset()
@@ -125,6 +126,7 @@ func (c *Color) Print(a ...interface{}) (n int, err error) {
 // standard output. Spaces are always added between operands and a newline is
 // appended. It returns the number of bytes written and any write error
 // encountered.
+// Standard fmt.Println() method wrapped with the given color.
 func (c *Color) Println(a ...interface{}) (n int, err error) {
 	c.Set() 		// applique "\033[31m"
 	defer Unset()	// à la fin, applique "\033[0m"
@@ -143,11 +145,27 @@ func (c *Color) sequence() string {
 	return strings.Join(format, ";")
 }
 
-// Set sets the SGR sequence.
-func (c *Color) Set() {
-	fmt.Fprintf(Output, "%s[%sm", escape, c.sequence())
+// Set sets the given parameters immediately. It will change the color of
+// output with the given SGR parameters until color.Unset() is called.
+func Set(p ...Parameter) *Color {
+	c := New(p...)
+	c.Set()
+	return c
 }
 
+// Unset() resets all escape attributes and clears the output. Usualy should
+// be called after Set().
 func Unset() {
 	fmt.Fprintf(Output, "%s[%dm", escape, Reset)
+}
+
+func (c *Color) Blue() *Color {
+	c.Add(FgBlue)
+	return c
+}
+
+// Set sets the SGR sequence.
+func (c *Color) Set() *Color {
+	fmt.Fprintf(Output, "%s[%sm", escape, c.sequence())
+	return c
 }

@@ -7,6 +7,9 @@ import (
 	"testing"
 )
 
+// Testing colors is kinda different. First we test for given colors and their
+// escaped formatted results. Next we create some visual tests to be tested.
+// Each visual test includes the color name to be compared.
 func TestColor(t *testing.T) {
 	rb := new(bytes.Buffer)
 	Output = rb
@@ -40,6 +43,7 @@ func TestColor(t *testing.T) {
 		}
 	}
 
+	// First Visual Test
 	fmt.Println("")
 	Output = os.Stdout
 
@@ -82,5 +86,15 @@ func TestColor(t *testing.T) {
 
 	// Second Visual test
 	Red("red")
+	Black("black")
 	Green.Printf("green\n")
+
+	// Third visual test
+	Set(FgBlue)
+	fmt.Println("is this blue ?")
+	Unset()
+
+	Set(FgMagenta)
+	fmt.Println("and this magenta?")
+	Unset()
 }
