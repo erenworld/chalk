@@ -10,6 +10,7 @@ import (
 	"strings"
 )
 
+// Color defines a custom color object which is defined by SGR parameters.
 type Color struct {
 	params []Parameter
 }
@@ -18,6 +19,7 @@ const escape = "\x1b"
 
 type Parameter int
 
+// All attributes off
 const (
 	Reset Parameter = iota
 	Bold
@@ -30,6 +32,8 @@ const (
 	Concealed
 	CrossedOut
 )
+
+// Foreground text colors
 const (
 	FgBlack Parameter = iota + 30
 	FgRed
@@ -41,6 +45,7 @@ const (
 	FgWhite
 )
 
+// Background text colors
 const (
 	BgBlack Parameter = iota + 40
 	BgRed
@@ -51,7 +56,6 @@ const (
     BgCyan
     BgWhite
 )
-
 
 var (
 	Green   = &Color{params: []Parameter{FgGreen}}
@@ -153,15 +157,10 @@ func Set(p ...Parameter) *Color {
 	return c
 }
 
-// Unset() resets all escape attributes and clears the output. Usualy should
+// Unset resets all escape attributes and clears the output. Usualy should
 // be called after Set().
 func Unset() {
 	fmt.Fprintf(Output, "%s[%dm", escape, Reset)
-}
-
-func (c *Color) Blue() *Color {
-	c.Add(FgBlue)
-	return c
 }
 
 // Set sets the SGR sequence.
