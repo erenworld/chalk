@@ -1,5 +1,3 @@
-// Package color is an ANSI color package to output colorized or SGR defined
-// output to the standard output.
 package chalk
 
 import (
@@ -19,7 +17,7 @@ const escape = "\x1b"
 
 type Parameter int
 
-// All attributes off
+// Base paramaters
 const (
 	Reset Parameter = iota
 	Bold
