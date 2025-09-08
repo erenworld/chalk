@@ -79,4 +79,8 @@ func TestColor(t *testing.T) {
 	New(FgMagenta, Bold).Set()
 	defer Unset()
 	fmt.Println("All text will be now bold magenta.")
+
+	// Second Visual test
+	Red("red")
+	Green.Printf("green\n")
 }
