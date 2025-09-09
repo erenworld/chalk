@@ -8,18 +8,18 @@ import (
 	"strings"
 )
 
-// Color defines a custom color object which is defined by SGR parameters.
+// Color defines a custom color object which is defined by SGR attributess.
 type Color struct {
-	params []Parameter
+	params []Attributes
 }
 
 const escape = "\x1b" 
 
-type Parameter int
+type Attributes int
 
 // Base paramaters
 const (
-	Reset Parameter = iota
+	Reset Attributes = iota
 	Bold
 	Faint
 	Italic
@@ -33,7 +33,7 @@ const (
 
 // Foreground text colors
 const (
-	FgBlack Parameter = iota + 30
+	FgBlack Attributes = iota + 30
 	FgRed
 	FgGreen
 	FgYellow
@@ -45,7 +45,7 @@ const (
 
 // Background text colors
 const (
-	BgBlack Parameter = iota + 40
+	BgBlack Attributes = iota + 40
 	BgRed
     BgGreen
     BgYellow
@@ -56,24 +56,24 @@ const (
 )
 
 var (
-	Green   = &Color{params: []Parameter{FgGreen}}
-	Yellow  = &Color{params: []Parameter{FgYellow}}
-	Blue    = &Color{params: []Parameter{FgBlue}}
-	Magenta = &Color{params: []Parameter{FgMagenta}}
-	Cyan    = &Color{params: []Parameter{FgCyan}}
-	White   = &Color{params: []Parameter{FgWhite}}
+	Green   = &Color{params: []Attributes{FgGreen}}
+	Yellow  = &Color{params: []Attributes{FgYellow}}
+	Blue    = &Color{params: []Attributes{FgBlue}}
+	Magenta = &Color{params: []Attributes{FgMagenta}}
+	Cyan    = &Color{params: []Attributes{FgCyan}}
+	White   = &Color{params: []Attributes{FgWhite}}
 )
 
 // Output defines the standard output of the print functions. By default
 // os.Stdout is used.
 var Output io.Writer = os.Stdout
 
-func printColor(format string, p Parameter, a ...interface{}) {
+func printColor(format string, p Attributes, a ...interface{}) {
 	if !strings.HasSuffix(format, "\n") {
 		format += "\n"
 	}
 
-	c := &Color{params: []Parameter{p}}
+	c := &Color{params: []Attributes{p}}
 	c.Printf(format, a...)
 }
 
@@ -84,8 +84,8 @@ func Red(format string, a ...interface{}) { printColor(format, FgRed, a...) }
 func Black(format string, a ...interface{}) { printColor(format, FgBlack, a...) }
 
 // New returns a newly created color object.
-func New(value ...Parameter) *Color {
-	c := &Color{params: make([]Parameter, 0)}
+func New(value ...Attributes) *Color {
+	c := &Color{params: make([]Attributes, 0)}
 	c.Add(value...)
 	return c
 } 
@@ -95,9 +95,9 @@ func (c *Color) Bold() *Color {
 	return c
 }
 
-// Add is used to chain SGR parameters. Use as many as paramters to combine
+// Add is used to chain SGR attributess. Use as many as paramters to combine
 // and create custom color objects. Example: Add(color.FgRed, color.Underline)
-func (c *Color) Add(value ...Parameter) *Color {
+func (c *Color) Add(value ...Attributes) *Color {
 	c.params = append(c.params, value...)
 	return c
 }
@@ -147,9 +147,9 @@ func (c *Color) sequence() string {
 	return strings.Join(format, ";")
 }
 
-// Set sets the given parameters immediately. It will change the color of
-// output with the given SGR parameters until color.Unset() is called.
-func Set(p ...Parameter) *Color {
+// Set sets the given attributess immediately. It will change the color of
+// output with the given SGR attributess until color.Unset() is called.
+func Set(p ...Attributes) *Color {
 	c := New(p...)
 	c.Set()
 	return c
