@@ -185,7 +185,9 @@ func (c *Color) PrintlnFunc() func(a ...interface{}) {
 // SprintFunc returns a new function that returns colorized strings for the
 // given arguments with fmt.Sprint(). Useful to put into or mix into other
 // string.
+func (c *Color) SprintFunc() func(a ...interface{}) string {
 
+}
 
 // sequence returns a formated SGR sequence to be plugged into a "\x1b[...m"
 // an example output might be: "1;36" -> bold cyan
