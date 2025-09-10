@@ -182,6 +182,11 @@ func (c *Color) PrintlnFunc() func(a ...interface{}) {
 	return func(a ...interface{}) { c.Println(a...) }
 }
 
+// SprintFunc returns a new function that returns colorized strings for the
+// given arguments with fmt.Sprint(). Useful to put into or mix into other
+// string.
+
+
 // sequence returns a formated SGR sequence to be plugged into a "\x1b[...m"
 // an example output might be: "1;36" -> bold cyan
 func (c *Color) sequence() string {
