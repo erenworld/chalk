@@ -90,6 +90,7 @@ func TestColor(t *testing.T) {
 	Green.Printf("green\n")
 
 	// Third visual test
+	fmt.Println()
 	Set(FgBlue)
 	fmt.Println("is this blue ?")
 	Unset()
@@ -97,4 +98,12 @@ func TestColor(t *testing.T) {
 	Set(FgMagenta)
 	fmt.Println("and this magenta?")
 	Unset()
+
+	// Fourth visual test
+	fmt.Println()
+	blue := New(FgBlue).PrintlnFunc()
+	blue("blue text with custom print func")
+
+	red := New(FgRed).PrintfFunc()
+	red("red text with a printf func: %d\n", 123)
 }
