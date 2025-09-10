@@ -6,6 +6,8 @@
 
 We use ANSI SGR for personalized color.
 
+The package is under ongoing development, checkout for regular updates.
+
 ## Install
 
 ```bash
@@ -55,6 +57,7 @@ whiteBg.Println("Red text with White background.")
 ```
 
 ### Plug into existing code
+
 ```go
 // OLD VERSION
 color.Yellow.Set()
@@ -73,7 +76,6 @@ defer color.Unset()
 
 fmt.Println("All text will be now bold magenta.")
 ```
-
 
 ## Credits
 
