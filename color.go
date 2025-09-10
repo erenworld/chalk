@@ -93,7 +93,8 @@ func Unset() {
 
 // Set sets the SGR sequence.
 func (c *Color) Set() *Color {
-	fmt.Fprintf(Output, "%s[%sm", escape, c.sequence())
+	// fmt.Fprintf(Output, "%s[%sm", escape, c.sequence())
+	fmt.Fprintf(Output, c.format())
 	return c
 }
 
@@ -156,14 +157,6 @@ func (c *Color) Println(a ...interface{}) (n int, err error) {
 	return fmt.Fprintln(Output, a...)
 }
 
-func (c *Color) SprintlnFunc() func(a ...interface{}) string {
-	return func(a ...interface{}) string {
-		c.Set()
-		defer Unset()
-		return fmt.Sprintln(a...)
-	}
-}
-
 // PrintFunc returns a new function prints the passed arguments as colorized
 // with color.Print().
 func (c *Color) PrintFunc() func(a ...interface{}) {
@@ -186,8 +179,34 @@ func (c *Color) PrintlnFunc() func(a ...interface{}) {
 // given arguments with fmt.Sprint(). Useful to put into or mix into other
 // string.
 func (c *Color) SprintFunc() func(a ...interface{}) string {
-
+	return func(a ...interface{}) string {
+		return c.wrap(fmt.Sprint(a...))
+	}
 }
+
+// SprintfFunc returns a new function that returns colorized strings for the
+// given arguments with fmt.Sprintf(). Useful to put into or mix into other
+// string.
+func (c *Color) SprintfFunc() func(format string, a ...interface{}) string {
+	return func(format string, a ...interface{}) string {
+		return c.wrap(fmt.Sprintf(format, a...))
+	}
+}
+
+// SprintlnFunc returns a new function that returns colorized strings for the
+// given arguments with fmt.Sprintln(). Useful to put into or mix into other
+// string.
+func (c *Color) SprintlnFunc() func(a ...interface{}) string {
+	return func(a ...interface{}) string {
+		return c.wrap(fmt.Sprintln(a...))
+	}
+}
+
+func (c *Color) wrap(s string) string { return c.format() + s + c.unformat() } 
+
+func (c *Color) format() string { return fmt.Sprintf("%s[%sm", escape, c.sequence()) }
+
+func (c *Color) unformat() string { return fmt.Sprintf("%s[%dm", escape, Reset) }
 
 // sequence returns a formated SGR sequence to be plugged into a "\x1b[...m"
 // an example output might be: "1;36" -> bold cyan
