@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-// Color defines a custom color object which is defined by SGR attributess.
+// Color defines a custom color object which is defined by SGR attributes.
 type Color struct {
 	params []Attributes
 }
@@ -77,6 +77,26 @@ func printColor(format string, p Attributes, a ...interface{}) {
 	c.Printf(format, a...)
 }
 
+// Set sets the given attributes immediately. It will change the color of
+// output with the given SGR attributes until color.Unset() is called.
+func Set(p ...Attributes) *Color {
+	c := New(p...)
+	c.Set()
+	return c
+}
+
+// Unset resets all escape attributes and clears the output. Usualy should
+// be called after Set().
+func Unset() {
+	fmt.Fprintf(Output, "%s[%dm", escape, Reset)
+}
+
+// Set sets the SGR sequence.
+func (c *Color) Set() *Color {
+	fmt.Fprintf(Output, "%s[%sm", escape, c.sequence())
+	return c
+}
+
 // Red is an convenient helper function to print with red foreground.
 func Red(format string, a ...interface{}) { printColor(format, FgRed, a...) }
 
@@ -95,7 +115,7 @@ func (c *Color) Bold() *Color {
 	return c
 }
 
-// Add is used to chain SGR attributess. Use as many as paramters to combine
+// Add is used to chain SGR attributes. Use as many as paramters to combine
 // and create custom color objects. Example: Add(color.FgRed, color.Underline)
 func (c *Color) Add(value ...Attributes) *Color {
 	c.params = append(c.params, value...)
@@ -136,6 +156,32 @@ func (c *Color) Println(a ...interface{}) (n int, err error) {
 	return fmt.Fprintln(Output, a...)
 }
 
+func (c *Color) SprintlnFunc() func(a ...interface{}) string {
+	return func(a ...interface{}) string {
+		c.Set()
+		defer Unset()
+		return fmt.Sprintln(a...)
+	}
+}
+
+// PrintFunc returns a new function prints the passed arguments as colorized
+// with color.Print().
+func (c *Color) PrintFunc() func(a ...interface{}) {
+	return func(a ...interface{}) { c.Print(a...) }
+}
+
+// PrintfFunc returns a new function prints the passed arguments as colorized
+// with color.Printf().
+func (c *Color) PrintfFunc() func(format string, a ...interface{}) {
+	return func(format string, a ...interface{}) { c.Printf(format, a...) }
+}
+
+// PrintlnFunc returns a new function prints the passed arguments as colorized
+// with color.Println().
+func (c *Color) PrintlnFunc() func(a ...interface{}) {
+	return func(a ...interface{}) { c.Println(a...) }
+}
+
 // sequence returns a formated SGR sequence to be plugged into a "\x1b[...m"
 // an example output might be: "1;36" -> bold cyan
 func (c *Color) sequence() string {
@@ -147,22 +193,4 @@ func (c *Color) sequence() string {
 	return strings.Join(format, ";")
 }
 
-// Set sets the given attributess immediately. It will change the color of
-// output with the given SGR attributess until color.Unset() is called.
-func Set(p ...Attributes) *Color {
-	c := New(p...)
-	c.Set()
-	return c
-}
 
-// Unset resets all escape attributes and clears the output. Usualy should
-// be called after Set().
-func Unset() {
-	fmt.Fprintf(Output, "%s[%dm", escape, Reset)
-}
-
-// Set sets the SGR sequence.
-func (c *Color) Set() *Color {
-	fmt.Fprintf(Output, "%s[%sm", escape, c.sequence())
-	return c
-}
