@@ -5,18 +5,14 @@ import (
 	"fmt"
 	"os"
 	"testing"
-	"runtime"
+
+	"github.com/shiena/ansicolor"
 )
 
 // Testing colors is kinda different. First we test for given colors and their
 // escaped formatted results. Next we create some visual tests to be tested.
 // Each visual test includes the color name to be compared.
 func TestColor(t *testing.T) {
-	// go tool dist list
-	if runtime.GOOS == "windows" {
-		t.Skip("Windows is not supported")
-	}
-
 	rb := new(bytes.Buffer)
 	Output = rb
 
@@ -51,7 +47,7 @@ func TestColor(t *testing.T) {
 
 	// First Visual Test
 	fmt.Println("")
-	Output = os.Stdout
+	Output = ansicolor.NewAnsiColorWriter(os.Stdout)
 
 	New(FgRed).Printf("red\t")
 	New(BgRed).Print("         ")
@@ -116,8 +112,14 @@ func TestColor(t *testing.T) {
 	put := New(FgYellow).SprintFunc()
 	warn := New(FgRed).SprintFunc()
 
-	fmt.Printf("this is a %s and this is %s.\n", put("warning"), warn("error"))
+	fmt.Fprintf(Output, "this is a %s and this is %s.\n", put("warning"), warn("error"))
+
 
 	info := New(FgWhite, BgGreen).SprintFunc()
 	fmt.Printf("this %s rocks!\n", info("package"))
+
+	// fmt.Fprintln(Output, BlackString("black"))
+	// fmt.Fprintln(Output, RedString("red"))
+	// fmt.Fprintln(Output, GreenString("green"))
+	// fmt.Fprintln(Output, YellowString("yellow"))
 }
