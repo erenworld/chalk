@@ -13,7 +13,11 @@ type Color struct {
 	params []Attributes
 }
 
-const escape = "\x1b" 
+const escape = "\x1b"
+
+// NoColor defines if the output should be colorized or not.
+// It's global and affects all Colors.
+var NoColor = false
 
 type Attributes int
 
@@ -88,13 +92,18 @@ func Set(p ...Attributes) *Color {
 // Unset resets all escape attributes and clears the output. Usualy should
 // be called after Set().
 func Unset() {
+	if NoColor {
+        return
+    }
 	fmt.Fprintf(Output, "%s[%dm", escape, Reset)
 }
 
 // Set sets the SGR sequence.
 func (c *Color) Set() *Color {
-	// fmt.Fprintf(Output, "%s[%sm", escape, c.sequence())
-	fmt.Fprintf(Output, c.format())
+	if NoColor {
+		return c
+	}
+    fmt.Fprint(Output, c.format())
 	return c
 }
 
