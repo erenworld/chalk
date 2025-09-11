@@ -56,6 +56,18 @@ whiteBg.Println("Red text with White background.")
 
 ```
 
+### Insert into noncolor strings
+
+```go
+// Create Sprint__ functions to mix strings with other non-colorized strings:
+yellow := New(FgYellow).SprintFunc()
+red := New(FgRed).SprintFunc()
+fmt.Printf("this is a %s and this is %s.\n", yellow("warning"), red("error"))
+
+info := New(FgWhite, BgGreen).SprintFunc()
+fmt.Printf("this %s rocks!\n", info("package"))
+```
+
 ### Plug into existing code
 
 ```go
