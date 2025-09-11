@@ -5,12 +5,18 @@ import (
 	"fmt"
 	"os"
 	"testing"
+	"runtime"
 )
 
 // Testing colors is kinda different. First we test for given colors and their
 // escaped formatted results. Next we create some visual tests to be tested.
 // Each visual test includes the color name to be compared.
 func TestColor(t *testing.T) {
+	// go tool dist list
+	if runtime.GOOS == "windows" {
+		t.Skip("Windows is not supported")
+	}
+
 	rb := new(bytes.Buffer)
 	Output = rb
 
