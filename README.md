@@ -4,7 +4,7 @@
 
 ## API
 
-We use ANSI SGR for personalized color.
+Color lets you use colorized outputs in terms of [ANSI Escape Codes](http://en.wikipedia.org/wiki/ANSI_escape_code#Colors). The API can be used in several ways, pick one that suits you. It has support for Windows too!
 
 The package is under ongoing development, checkout for regular updates.
 
@@ -27,6 +27,10 @@ color.Red.Add(color.BgWhite, color.Underline).Printf("Red with Black background 
 color.Red("We have red")
 color.Yellow("Yellow color too!")
 color.Magenta("And many others ..")
+
+
+// Windows supported too! Just don't forget to change the output to color.Output
+fmt.Fprintf(color.Output, "Windows support: %s", color.GreenString("PASS"))
 ```
 
 ### Mix and reuse colors
@@ -91,7 +95,8 @@ fmt.Println("All text will be now bold magenta.")
 
 ## Credits
 
-- [Eren Turkoglu](https://github.com/erenworld)
+* [Eren Turkoglu](https://github.com/erenworld)
+* Windows support via @shiena: [ansicolor](https://github.com/shiena/ansicolor)
 
 ## License
 
