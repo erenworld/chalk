@@ -9,17 +9,18 @@ import (
 
 	"github.com/shiena/ansicolor"
 )
+// NoColor defines if the output should be colorized or not.
+// It's global and affects all Colors.
+var NoColor bool = false
 
 // Color defines a custom color object which is defined by SGR attributes.
 type Color struct {
-	params []Attributes
+	params 	[]Attributes
+	NoColor *bool
 }
 
 const escape = "\x1b"
 
-// NoColor defines if the output should be colorized or not.
-// It's global and affects all Colors.
-var NoColor = false
 
 type Attributes int
 
