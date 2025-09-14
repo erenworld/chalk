@@ -9,6 +9,7 @@ import (
 
 	"github.com/shiena/ansicolor"
 )
+
 // NoColor defines if the output should be colorized or not.
 // It's global and affects all Colors.
 var NoColor bool = false
@@ -88,7 +89,7 @@ func printColor(format string, p Attributes, a ...interface{}) {
 // output with the given SGR attributes until color.Unset() is called.
 func Set(p ...Attributes) *Color {
 	c := New(p...)
-	c.Set()
+	c.set()
 	return c
 }
 
@@ -108,6 +109,23 @@ func (c *Color) Set() *Color {
 	}
     fmt.Fprint(Output, c.format())
 	return c
+}
+
+// Set sets the SGR sequence.
+func (c *Color) set() *Color {
+	if c.isNoColorSet() {
+		return c
+	}
+	fmt.Fprint(Output, c.format())
+
+	return c
+}
+
+func (c *Color) unset() {
+	if c.isNoColorSet() {
+		return 
+	}
+	Unset()
 }
 
 // Red is an convenient helper function to print with red foreground.
@@ -139,8 +157,8 @@ func (c *Color) Add(value ...Attributes) *Color {
 // It returns the number of bytes written and any write error encountered.
 // Standard fmt.PrintF() method wrapped with the given color.
 func (c *Color) Printf(format string, a ...interface{}) (n int, err error) {
-	c.Set()
-	defer Unset()
+	c.set()
+	defer c.unset()
 
 	return fmt.Fprintf(Output, format, a...)
 }
@@ -151,8 +169,8 @@ func (c *Color) Printf(format string, a ...interface{}) (n int, err error) {
 // encountered.
 // Standard fmt.Print() method wrapped with the given color.
 func (c *Color) Print(a ...interface{}) (n int, err error) {
-	c.Set()
-	defer Unset()
+	c.set()
+	defer c.unset()
 
 	return fmt.Fprint(Output, a...)
 }
@@ -163,8 +181,8 @@ func (c *Color) Print(a ...interface{}) (n int, err error) {
 // encountered.
 // Standard fmt.Println() method wrapped with the given color.
 func (c *Color) Println(a ...interface{}) (n int, err error) {
-	c.Set() 		// applique "\033[31m"
-	defer Unset()	// à la fin, applique "\033[0m"
+	c.set() 		// applique "\033[31m"
+	defer c.unset()	// à la fin, applique "\033[0m"
 
 	return fmt.Fprintln(Output, a...)
 }
@@ -217,11 +235,47 @@ func (c *Color) SprintlnFunc() func(a ...interface{}) string {
 	}
 }
 
-func (c *Color) wrap(s string) string { return c.format() + s + c.unformat() } 
+func (c *Color) wrap(s string) string {
+	if c.isNoColorSet() {
+		return s
+	}
+    return c.format() + s + c.unformat()
+}
 
-func (c *Color) format() string { return fmt.Sprintf("%s[%sm", escape, c.sequence()) }
+func (c *Color) unformat() string { 
+	return fmt.Sprintf("%s[%dm", escape, Reset)
+}
 
-func (c *Color) unformat() string { return fmt.Sprintf("%s[%dm", escape, Reset) }
+func (c *Color) format() string { 
+	return fmt.Sprintf("%s[%sm", escape, c.sequence())
+}
+
+// DisableColor disables the color output. Useful to not change any existing
+// code and still being able to output. Can be used for flags like
+// "--no-color". To enable back use EnableColor() method.
+func (c *Color) DisableColor() {
+	t := new(bool)
+	*t = true
+	c.NoColor = t
+}
+
+// EnableColor enables the color input. Use it in conjuction with
+// DisableColor(). Otherwise this method has no side effects.
+func (c *Color) EnableColor() {
+	t := new(bool)
+	*t = false
+	c.NoColor = t
+}
+
+func (c *Color) isNoColorSet() bool {
+	// check first if we have user setted action
+	if c.NoColor != nil {
+		return *c.NoColor
+	}
+
+	// if not return the global option, which is disabled by default
+	return NoColor
+}
 
 // sequence returns a formated SGR sequence to be plugged into a "\x1b[...m"
 // an example output might be: "1;36" -> bold cyan
