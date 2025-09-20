@@ -18,10 +18,26 @@ var Output io.Writer = ansicolor.NewAnsiColorWriter(os.Stdout)
 
 type Color struct {
 	params []Attribute
+	noColor *bool
 }
+
+var NoColor bool = false
 
 // Attribute defines a single SGR Code
 type Attribute int
+
+const (
+	Reset Attribute = iota
+	Bold
+	Faint
+	Italic
+	Underline
+	BlinkSlow
+	BlinkRapid
+	ReverseVideo
+	Concealed
+	CrossedOut
+)
 
 const (
 	FgBlack Attribute = iota + 30
@@ -45,18 +61,12 @@ const (
 	BgWhite
 )
 
-const (
-	Reset Attribute = iota
-	Bold
-	Faint
-	Italic
-	Underline
-	BlinkSlow
-	BlinkRapid
-	ReverseVideo
-	Concealed
-	CrossedOut
-)
+
+func New(value ...Attribute) *Color {
+	c := &Color{params: make([]Attribute, 0)}
+	c.Add(value...)
+	return c
+}
 
 func BlackString(format string, a ...interface{}) string {
 	return New(FgBlack).SprintfFunc()(format, a...)
@@ -82,9 +92,6 @@ func WhiteString(format string, a ...interface{}) string {
 func YellowString(format string, a ...interface{}) string {
 	return New(FgYellow).SprintfFunc()(format, a...)
 }
-
-
-
 
 // Black is an convenient helper function to print with black foreground. A
 // newline is appended to format by default.
@@ -118,11 +125,6 @@ func Cyan(format string, a ...interface{}) { printColor(format, FgCyan, a...) }
 // newline is appended to format by default.
 func White(format string, a ...interface{}) { printColor(format, FgWhite, a...) }
 
-func New(value ...Attribute) *Color {
-	c := &Color{params: make([]Attribute, 0)}
-	c.Add(value...)
-	return c
-}
 
 func (c *Color) Bold() *Color {
 	c.Add(Bold)
@@ -151,22 +153,22 @@ func (c *Color) prepend(value Attribute) {
 
 
 func (c *Color) Printf(format string, a ...interface{}) (n int, err error) {
-	c.Set()
-	defer Unset()
+	c.set()
+	defer c.unset()
 
 	return fmt.Fprintf(Output, format, a...)
 }
 
 func (c *Color) Print(a ...interface{}) (n int, err error) {
-	c.Set()
-	defer Unset()
+	c.set()
+	defer c.unset()
 
 	return fmt.Fprint(Output, a...)
 }
 
 func (c *Color) Println(a ...interface{}) (n int, err error) {
-	c.Set()
-	defer Unset()
+	c.set()
+	defer c.unset()
 
 	return fmt.Fprintln(Output, a...)
 }
@@ -212,24 +214,41 @@ func (c *Color) sequence() string {
 	return strings.Join(format, ";")
 }
 
-// Set sets the SGR sequence.
-func (c *Color) Set() *Color {
-	fmt.Fprintf(Output, "%s[%sm", escape, c.sequence())
-	return c
-}
 
 func Set(p ...Attribute) *Color {
 	c := New(p...)
-	c.Set()
+	c.set()
 	return c
 }
 
 func Unset() {
+	if NoColor {
+		return
+	}
 	fmt.Fprintf(Output, "%s[%dm", escape, Reset)
+}
 
+
+func (c *Color) set() *Color {
+	if c.isNoColorSet() {
+		return c
+	}
+	fmt.Fprint(Output, c.format())
+	return c
+}
+
+func (c *Color) unset() {
+	if c.isNoColorSet() {
+		return
+	}
+	Unset()
 }
 
 func (c *Color) wrap(s string) string {
+	if c.isNoColorSet() {
+		return s
+	}
+
 	return c.format() + s + c.unformat()
 }
 
@@ -241,5 +260,30 @@ func (c *Color) unformat() string {
 	return fmt.Sprintf("%s[%dm", escape, Reset)
 }
 
+// DisableColor disables the color output. Useful to not change any existing
+// code and still being able to output. Can be used for flags like
+// "--no-color". To enable back use EnableColor() method.
+func (c *Color) DisableColor() {
+	t := new(bool)
+	*t = true
+	c.noColor = t 
+}
 
+// EnableColor enables the color output. Use it in conjuction with
+// DisableColor(). Otherwise this method has no side effects.
 
+func (c *Color) EnableColor() {
+	t := new(bool)
+	*t = false
+	c.noColor = t 
+}
+
+func (c *Color) isNoColorSet() bool {
+	// check first if we have user setted action
+	if c.noColor != nil {
+		return *c.noColor
+	}
+
+	// if not return the global option, which is disabled by default
+	return NoColor
+}
