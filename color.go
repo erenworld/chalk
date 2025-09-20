@@ -6,13 +6,15 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/shiena/ansicolor"
 )
 
 const escape = "\x1b"
 
 // Output defines the standard output of the print functions. Any io.Writer
 // can be used.
-var Output io.Writer = os.Stdout
+var Output io.Writer = ansicolor.NewAnsiColorWriter(os.Stdout)
 
 type Color struct {
 	params []Attribute
@@ -76,6 +78,9 @@ func CyanString(format string, a ...interface{}) string {
 }
 func WhiteString(format string, a ...interface{}) string {
 	return New(FgWhite).SprintfFunc()(format, a...)
+}
+func YellowString(format string, a ...interface{}) string {
+	return New(FgYellow).SprintfFunc()(format, a...)
 }
 
 

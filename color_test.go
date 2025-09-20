@@ -6,6 +6,8 @@ import (
 	"os"
 	"testing"
 	"runtime"
+
+	"github.com/shiena/ansicolor"
 )
 
 func TestColor(t *testing.T) {
@@ -47,7 +49,7 @@ func TestColor(t *testing.T) {
 
 	// Visual Test
 	fmt.Println("")
-	Output = os.Stdout
+	Output = ansicolor.NewAnsiColorWriter(os.Stdout)
 
 	New(FgRed).Printf("red\t")
 	New(BgRed).Print("         ")
@@ -103,15 +105,19 @@ func TestColor(t *testing.T) {
 	put := New(FgYellow).SprintFunc()
 	warn := New(FgRed).SprintFunc()
 
-	fmt.Printf("this is a %s and this is %s.\n", put("warning"), warn("error"))
+	fmt.Fprintf(Output, "this is a %s and this is %s.\n", put("warning"), warn("error"))
 
 	info := New(FgRed, BgYellow).SprintFunc()
-	fmt.Printf("this %s rocks!\n", info("package"))
+	fmt.Fprintf(Output, "this %s rocks!\n", info("package"))
 
 	// Fifth Visual Test
 	fmt.Println()
-
-	fmt.Println(BlackString("Black string"))
-	fmt.Println(RedString("Red string"))
-	fmt.Println(CyanString("Cyan string"))
+	fmt.Fprintln(Output, BlackString("black"))
+	fmt.Fprintln(Output, RedString("red"))
+	fmt.Fprintln(Output, GreenString("green"))
+	fmt.Fprintln(Output, YellowString("yellow"))
+	fmt.Fprintln(Output, BlueString("blue"))
+	fmt.Fprintln(Output, MagentaString("magenta"))
+	fmt.Fprintln(Output, CyanString("cyan"))
+	fmt.Fprintln(Output, WhiteString("white"))
 }
