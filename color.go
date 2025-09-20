@@ -56,6 +56,31 @@ const (
 	CrossedOut
 )
 
+func BlackString(format string, a ...interface{}) string {
+	return New(FgBlack).SprintfFunc()(format, a...)
+}
+func RedString(format string, a ...interface{}) string {
+	return New(FgRed).SprintfFunc()(format, a...)
+}
+func GreenString(format string, a ...interface{}) string {
+	return New(FgGreen).SprintfFunc()(format, a...)
+}
+func BlueString(format string, a ...interface{}) string {
+	return New(FgBlue).SprintfFunc()(format, a...)
+}
+func MagentaString(format string, a ...interface{}) string {
+	return New(FgMagenta).SprintfFunc()(format, a...)
+}
+func CyanString(format string, a ...interface{}) string {
+	return New(FgCyan).SprintfFunc()(format, a...)
+}
+func WhiteString(format string, a ...interface{}) string {
+	return New(FgWhite).SprintfFunc()(format, a...)
+}
+
+
+
+
 // Black is an convenient helper function to print with black foreground. A
 // newline is appended to format by default.
 func Black(format string, a ...interface{}) { printColor(format, FgBlack, a...) }
