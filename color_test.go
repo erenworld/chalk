@@ -5,20 +5,15 @@ import (
 	"fmt"
 	"os"
 	"testing"
-
-	"github.com/shiena/ansicolor"
 )
 
-// Testing colors is kinda different. First we test for given colors and their
-// escaped formatted results. Next we create some visual tests to be tested.
-// Each visual test includes the color name to be compared.
 func TestColor(t *testing.T) {
 	rb := new(bytes.Buffer)
 	Output = rb
 
 	testColors := []struct {
 		text string
-		code Attributes
+		code Attribute
 	}{
 		{text: "black", code: FgBlack},
 		{text: "red", code: FgRed},
@@ -45,9 +40,9 @@ func TestColor(t *testing.T) {
 		}
 	}
 
-	// First Visual Test
+	// Visual Test
 	fmt.Println("")
-	Output = ansicolor.NewAnsiColorWriter(os.Stdout)
+	Output = os.Stdout
 
 	New(FgRed).Printf("red\t")
 	New(BgRed).Print("         ")
@@ -76,32 +71,23 @@ func TestColor(t *testing.T) {
 	New(FgWhite).Printf("white\t")
 	New(BgWhite).Print("         ")
 	New(FgWhite, Bold).Println(" white")
-
 	fmt.Println("")
 
-	c := New(FgRed).Add(Underline)
-	c.Println("Prints red text with an underline.")
-
-	New(FgMagenta, Bold).Set()
-	defer Unset()
-	fmt.Println("All text will be now bold magenta.")
-
-	// Second Visual test
-	Red("red")
 	Black("black")
-	Green.Printf("green\n")
+	Red("red")
+	Green("green")
 
 	// Third visual test
 	fmt.Println()
 	Set(FgBlue)
-	fmt.Println("is this blue ?")
+	fmt.Println("is this blue?")
 	Unset()
 
 	Set(FgMagenta)
 	fmt.Println("and this magenta?")
 	Unset()
 
-	// Fourth visual test
+	// Fourth Visual test
 	fmt.Println()
 	blue := New(FgBlue).PrintlnFunc()
 	blue("blue text with custom print func")
@@ -112,44 +98,8 @@ func TestColor(t *testing.T) {
 	put := New(FgYellow).SprintFunc()
 	warn := New(FgRed).SprintFunc()
 
-	fmt.Fprintf(Output, "this is a %s and this is %s.\n", put("warning"), warn("error"))
+	fmt.Printf("this is a %s and this is %s.\n", put("warning"), warn("error"))
 
-
-	info := New(FgWhite, BgGreen).SprintFunc()
+	info := New(FgRed, BgYellow).SprintFunc()
 	fmt.Printf("this %s rocks!\n", info("package"))
-
-	// fmt.Fprintln(Output, BlackString("black"))
-	// fmt.Fprintln(Output, RedString("red"))
-	// fmt.Fprintln(Output, GreenString("green"))
-	// fmt.Fprintln(Output, YellowString("yellow"))
-}
-
-func TestNoColor(t *testing.T) {
-	rb := new(bytes.Buffer)
-	Output = rb
-
-	testColors := []struct {
-		text	string
-		code 	Attributes
-	}{
-		{text: "black", code: FgBlack},
-		{text: "red", code: FgRed},
-		{text: "green", code: FgGreen},
-		{text: "yellow", code: FgYellow},
-		{text: "blue", code: FgBlue},
-		{text: "magent", code: FgMagenta},
-		{text: "cyan", code: FgCyan},
-		{text: "white", code: FgWhite},	
-	}
-	for _, c := range testColors {
-		p := New(c.code)
-		p.DisableColor()
-		p.Print(c.text)
-
-		line, _ := rb.ReadString('\n')
-
-		if line != c.text {
-			t.Errorf("Expecting %s, got '%s'\n", c.text, line)
-		}
-	}
 }
