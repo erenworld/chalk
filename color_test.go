@@ -5,9 +5,14 @@ import (
 	"fmt"
 	"os"
 	"testing"
+	"runtime"
 )
 
 func TestColor(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("Windows is not supported yet.")
+	}
+
 	rb := new(bytes.Buffer)
 	Output = rb
 
