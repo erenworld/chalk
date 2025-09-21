@@ -98,28 +98,28 @@ func New(value ...Attribute) *Color {
 }
 
 func BlackString(format string, a ...interface{}) string {
-	return New(FgBlack).SprintfFunc()(format, a...)
+	return printString(format, FgBlack, a...)
 }
 func RedString(format string, a ...interface{}) string {
-	return New(FgRed).SprintfFunc()(format, a...)
+	return printString(format, FgRed, a...)
 }
 func GreenString(format string, a ...interface{}) string {
-	return New(FgGreen).SprintfFunc()(format, a...)
+	return printString(format, FgGreen, a...)
 }
 func BlueString(format string, a ...interface{}) string {
-	return New(FgBlue).SprintfFunc()(format, a...)
+	return printString(format, FgBlue, a...)
 }
 func MagentaString(format string, a ...interface{}) string {
-	return New(FgMagenta).SprintfFunc()(format, a...)
+	return printString(format, FgMagenta, a...)
 }
 func CyanString(format string, a ...interface{}) string {
-	return New(FgCyan).SprintfFunc()(format, a...)
+	return printString(format, FgCyan, a...)
 }
 func WhiteString(format string, a ...interface{}) string {
-	return New(FgWhite).SprintfFunc()(format, a...)
+	return printString(format, FgWhite, a...)
 }
 func YellowString(format string, a ...interface{}) string {
-	return New(FgYellow).SprintfFunc()(format, a...)
+	return printString(format, FgYellow, a...)
 }
 
 func Black(format string, a ...interface{})   { printColor(format, FgBlack, a...) }
@@ -142,12 +142,27 @@ func (c *Color) Add(value ...Attribute) *Color {
 }
 
 func printColor(format string, p Attribute, a ...interface{}) {
+	// If no arguments (a...) are given, it treats format as the text itself.
+	if len(a) == 0 {
+		a = append(a, format)
+		format = "%s"
+	}
+
 	if !strings.HasSuffix(format, "\n") {
 		format += "\n"
 	}
 
 	c := &Color{params: []Attribute{p}}
 	c.Printf(format, a...)
+}
+
+func printString(format string, p Attribute, a ...interface{}) string {
+	if len(a) == 0 {
+		a = append(a, format)
+		format = "%s"
+	}
+
+	return New(p).SprintfFunc()(format, a...)
 }
 
 func (c *Color) Printf(format string, a ...interface{}) (n int, err error) {
@@ -260,9 +275,6 @@ func (c *Color) unformat() string {
 // code and still being able to output. Can be used for flags like
 // "--no-color". To enable back use EnableColor() method.
 func (c *Color) DisableColor() {
-	// t := new(bool)
-	// *t = true
-	// c.noColor = t
 	c.noColor = boolPtr(true)
 }
 
@@ -270,9 +282,6 @@ func (c *Color) DisableColor() {
 // DisableColor(). Otherwise this method has no side effects.
 
 func (c *Color) EnableColor() {
-	// t := new(bool)
-	// *t = false
-	// c.noColor = t
 	c.noColor = boolPtr(false)
 
 }
