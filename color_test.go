@@ -75,7 +75,10 @@ func TestNoColor(t *testing.T) {
 			t.Errorf("Expecting %s, got '%s'\n", c.text, line)
 		}
 
-		NoColor = false
+		NoColor = true
+		defer func() {
+			NoColor = false
+		}()
 		for _, c := range testColors {
 			p := New(c.code)
 			p.Print(c.text)
@@ -86,7 +89,6 @@ func TestNoColor(t *testing.T) {
 			}
 		}
 	}
-
 }
 
 func TestColorVisual(t *testing.T) {

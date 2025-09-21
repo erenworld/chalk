@@ -12,8 +12,8 @@ import (
 
 const escape = "\x1b"
 
-// Output defines the standard output of the print functions. Any io.Writer
-// can be used.
+// Output defines the standard output of the print functions. 
+// Any io.Writer can be used.
 var Output io.Writer = ansicolor.NewAnsiColorWriter(os.Stdout)
 
 type Color struct {
@@ -21,6 +21,8 @@ type Color struct {
 	noColor *bool
 }
 
+// This is a global variable and affects all colors.
+// For more control over each color use the method DisableColor() individually.
 var NoColor bool = false
 
 // Attribute defines a single SGR Code
@@ -121,21 +123,21 @@ func printColor(format string, p Attribute, a ...interface{}) {
 }
 
 func (c *Color) Printf(format string, a ...interface{}) (n int, err error) {
-	c.set()
+	c.Set()
 	defer c.unset()
 
 	return fmt.Fprintf(Output, format, a...)
 }
 
 func (c *Color) Print(a ...interface{}) (n int, err error) {
-	c.set()
+	c.Set()
 	defer c.unset()
 
 	return fmt.Fprint(Output, a...)
 }
 
 func (c *Color) Println(a ...interface{}) (n int, err error) {
-	c.set()
+	c.Set()
 	defer c.unset()
 
 	return fmt.Fprintln(Output, a...)
@@ -184,7 +186,7 @@ func (c *Color) sequence() string {
 
 func Set(p ...Attribute) *Color {
 	c := New(p...)
-	c.set()
+	c.Set()
 	return c
 }
 
@@ -195,7 +197,7 @@ func Unset() {
 	fmt.Fprintf(Output, "%s[%dm", escape, Reset)
 }
 
-func (c *Color) set() *Color {
+func (c *Color) Set() *Color {
 	if c.isNoColorSet() {
 		return c
 	}
