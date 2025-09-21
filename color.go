@@ -230,18 +230,21 @@ func (c *Color) unformat() string {
 // code and still being able to output. Can be used for flags like
 // "--no-color". To enable back use EnableColor() method.
 func (c *Color) DisableColor() {
-	t := new(bool)
-	*t = true
-	c.noColor = t
+	// t := new(bool)
+	// *t = true
+	// c.noColor = t
+	c.noColor = boolPtr(true)
 }
 
 // EnableColor enables the color output. Use it in conjuction with
 // DisableColor(). Otherwise this method has no side effects.
 
 func (c *Color) EnableColor() {
-	t := new(bool)
-	*t = false
-	c.noColor = t
+	// t := new(bool)
+	// *t = false
+	// c.noColor = t
+	c.noColor = boolPtr(false)
+
 }
 
 func (c *Color) isNoColorSet() bool {
@@ -252,4 +255,8 @@ func (c *Color) isNoColorSet() bool {
 
 	// if not return the global option, which is disabled by default
 	return NoColor
+}
+
+func boolPtr(v bool) *bool {
+	return &v
 }
