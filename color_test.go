@@ -3,7 +3,6 @@ package chalk
 import (
 	"bytes"
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/mattn/go-colorable"
