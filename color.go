@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/mattn/go-colorable"
 	"github.com/mattn/go-isatty"
@@ -21,11 +22,15 @@ var Output io.Writer = colorable.NewColorableStdout()
 // For more control over each color use the method DisableColor() individually.
 var NoColor = !isatty.IsTerminal(os.Stdout.Fd()) || os.Getenv("TERM") == "dumb"
 
+// colorsCache is used to reduce the count of created Color objects and
+// allows to reuse already created objects with required Attribute.
+var colorsCache = make(map[Attribute]*Color)
+var colorsCacheMu = new(sync.Mutex) // protects colorsCache
+
 type Color struct {
 	params  []Attribute
 	noColor *bool
 }
-
 
 // Attribute defines a single SGR Code
 type Attribute int
@@ -90,6 +95,18 @@ const (
 	BgHiWhite
 )
 
+func getCachedColor(p Attribute) *Color {
+	colorsCacheMu.Lock()
+	defer colorsCacheMu.Unlock()
+
+	c, ok := colorsCache[p] 
+	if !ok {
+		c = New(p)
+		colorsCache[p] = c 
+	}
+
+	return c
+}
 
 func New(value ...Attribute) *Color {
 	c := &Color{params: make([]Attribute, 0)}
@@ -142,6 +159,8 @@ func (c *Color) Add(value ...Attribute) *Color {
 }
 
 func printColor(format string, p Attribute, a ...interface{}) {
+	c := getCachedColor(p)
+
 	// If no arguments (a...) are given, it treats format as the text itself.
 	if len(a) == 0 {
 		a = append(a, format)
@@ -152,17 +171,18 @@ func printColor(format string, p Attribute, a ...interface{}) {
 		format += "\n"
 	}
 
-	c := &Color{params: []Attribute{p}}
 	c.Printf(format, a...)
 }
 
 func printString(format string, p Attribute, a ...interface{}) string {
+	c := getCachedColor(p)
+
 	if len(a) == 0 {
 		a = append(a, format)
 		format = "%s"
 	}
 
-	return New(p).SprintfFunc()(format, a...)
+	return c.SprintfFunc()(format, a...)
 }
 
 func (c *Color) Printf(format string, a ...interface{}) (n int, err error) {
