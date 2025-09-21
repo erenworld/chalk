@@ -17,7 +17,7 @@ const escape = "\x1b"
 var Output io.Writer = ansicolor.NewAnsiColorWriter(os.Stdout)
 
 type Color struct {
-	params []Attribute
+	params  []Attribute
 	noColor *bool
 }
 
@@ -61,7 +61,6 @@ const (
 	BgWhite
 )
 
-
 func New(value ...Attribute) *Color {
 	c := &Color{params: make([]Attribute, 0)}
 	c.Add(value...)
@@ -93,15 +92,14 @@ func YellowString(format string, a ...interface{}) string {
 	return New(FgYellow).SprintfFunc()(format, a...)
 }
 
-func Black(format string, a ...interface{}) { printColor(format, FgBlack, a...) }
-func Red(format string, a ...interface{}) { printColor(format, FgRed, a...) }
-func Green(format string, a ...interface{}) { printColor(format, FgGreen, a...) }
-func Yellow(format string, a ...interface{}) { printColor(format, FgYellow, a...) }
-func Blue(format string, a ...interface{}) { printColor(format, FgBlue, a...) }
+func Black(format string, a ...interface{})   { printColor(format, FgBlack, a...) }
+func Red(format string, a ...interface{})     { printColor(format, FgRed, a...) }
+func Green(format string, a ...interface{})   { printColor(format, FgGreen, a...) }
+func Yellow(format string, a ...interface{})  { printColor(format, FgYellow, a...) }
+func Blue(format string, a ...interface{})    { printColor(format, FgBlue, a...) }
 func Magenta(format string, a ...interface{}) { printColor(format, FgMagenta, a...) }
-func Cyan(format string, a ...interface{}) { printColor(format, FgCyan, a...) }
-func White(format string, a ...interface{}) { printColor(format, FgWhite, a...) }
-
+func Cyan(format string, a ...interface{})    { printColor(format, FgCyan, a...) }
+func White(format string, a ...interface{})   { printColor(format, FgWhite, a...) }
 
 func (c *Color) Bold() *Color {
 	c.Add(Bold)
@@ -121,13 +119,6 @@ func printColor(format string, p Attribute, a ...interface{}) {
 	c := &Color{params: []Attribute{p}}
 	c.Printf(format, a...)
 }
-
-func (c *Color) prepend(value Attribute) {
-	c.params = append(c.params, 0)
-	copy(c.params[1:], c.params[0:])
-	c.params[0] = value
-}
-
 
 func (c *Color) Printf(format string, a ...interface{}) (n int, err error) {
 	c.set()
@@ -162,7 +153,6 @@ func (c *Color) PrintlnFunc() func(a ...interface{}) {
 	return func(a ...interface{}) { c.Println(a...) }
 }
 
-
 func (c *Color) SprintFunc() func(a ...interface{}) string {
 	return func(a ...interface{}) string {
 		return c.wrap(fmt.Sprint(a...))
@@ -180,6 +170,7 @@ func (c *Color) SprintlnFunc() func(a ...interface{}) string {
 		return c.wrap(fmt.Sprintln(a...))
 	}
 }
+
 // sequence returns a formated SGR sequence to be plugged into a "\033[...m"
 // an example output might be: "1;36" -> bold cyan
 func (c *Color) sequence() string {
@@ -190,7 +181,6 @@ func (c *Color) sequence() string {
 
 	return strings.Join(format, ";")
 }
-
 
 func Set(p ...Attribute) *Color {
 	c := New(p...)
@@ -204,7 +194,6 @@ func Unset() {
 	}
 	fmt.Fprintf(Output, "%s[%dm", escape, Reset)
 }
-
 
 func (c *Color) set() *Color {
 	if c.isNoColorSet() {
@@ -230,7 +219,7 @@ func (c *Color) wrap(s string) string {
 }
 
 func (c *Color) format() string {
-	return fmt.Sprintf("%s[%sm", escape, c.sequence()) 
+	return fmt.Sprintf("%s[%sm", escape, c.sequence())
 }
 
 func (c *Color) unformat() string {
@@ -243,7 +232,7 @@ func (c *Color) unformat() string {
 func (c *Color) DisableColor() {
 	t := new(bool)
 	*t = true
-	c.noColor = t 
+	c.noColor = t
 }
 
 // EnableColor enables the color output. Use it in conjuction with
@@ -252,7 +241,7 @@ func (c *Color) DisableColor() {
 func (c *Color) EnableColor() {
 	t := new(bool)
 	*t = false
-	c.noColor = t 
+	c.noColor = t
 }
 
 func (c *Color) isNoColorSet() bool {
