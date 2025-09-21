@@ -96,7 +96,7 @@ fmt.Println("All text will be now bold magenta.")
 ## Credits
 
 * [Eren Turkoglu](https://github.com/erenworld)
-* Windows support via @shiena: [ansicolor](https://github.com/shiena/ansicolor)
+* Windows support via @mattn: [colorable](https://github.com/mattn/go-colorable)
 
 ## License
 
