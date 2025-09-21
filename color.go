@@ -19,7 +19,7 @@ var Output io.Writer = colorable.NewColorableStdout()
 
 // This is a global variable and affects all colors.
 // For more control over each color use the method DisableColor() individually.
-var NoColor = !isatty.IsTerminal(os.Stdout.Fd())
+var NoColor = !isatty.IsTerminal(os.Stdout.Fd()) || os.Getenv("TERM") == "dumb"
 
 type Color struct {
 	params  []Attribute
