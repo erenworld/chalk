@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/shiena/ansicolor"
+	"github.com/mattn/go-colorable"
 	"github.com/mattn/go-isatty"
 )
 
@@ -15,7 +15,7 @@ const escape = "\x1b"
 
 // Output defines the standard output of the print functions. 
 // Any io.Writer can be used.
-var Output io.Writer = ansicolor.NewAnsiColorWriter(os.Stdout)
+var Output io.Writer = colorable.NewColorableStdout()
 
 // This is a global variable and affects all colors.
 // For more control over each color use the method DisableColor() individually.

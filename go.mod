@@ -7,4 +7,7 @@ require (
 	github.com/shiena/ansicolor v0.0.0-20230509054315-a9deabde6e02
 )
 
-require golang.org/x/sys v0.6.0 // indirect
+require (
+	github.com/mattn/go-colorable v0.1.14 // indirect
+	golang.org/x/sys v0.29.0 // indirect
+)
