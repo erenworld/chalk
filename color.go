@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/shiena/ansicolor"
+	"github.com/robertkrimen/isatty"
 )
 
 const escape = "\x1b"
@@ -16,14 +17,15 @@ const escape = "\x1b"
 // Any io.Writer can be used.
 var Output io.Writer = ansicolor.NewAnsiColorWriter(os.Stdout)
 
+// This is a global variable and affects all colors.
+// For more control over each color use the method DisableColor() individually.
+var NoColor = !isatty.Check(os.Stdout.Fd())
+
 type Color struct {
 	params  []Attribute
 	noColor *bool
 }
 
-// This is a global variable and affects all colors.
-// For more control over each color use the method DisableColor() individually.
-var NoColor bool = false
 
 // Attribute defines a single SGR Code
 type Attribute int
