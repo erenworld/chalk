@@ -175,3 +175,33 @@ func TestColorVisual(t *testing.T) {
 	fmt.Fprintln(Output, CyanString("cyan"))
 	fmt.Fprintln(Output, WhiteString("white"))
 }
+
+func TestEqualColor(t *testing.T) {
+	fgblack1 := New(FgBlack)
+	fgblack2 := New(FgBlack)
+	bgblack := New(BgBlack)
+	fgbgblack := New(FgBlack, BgBlack)
+	fgred := New(FgRed)
+	bgred := New(BgRed)
+
+	if !fgblack1.Equal(fgblack2) {
+		t.Error("Two black colors are not equal")
+	}
+
+	if fgblack1.Equal(bgblack) {
+		t.Error("Fg and bg black colors are equal")
+	}
+
+	if fgblack1.Equal(fgbgblack) {
+		t.Error("Fg black equals fg/bg black color")
+	}
+
+	if fgblack1.Equal(fgred) {
+		t.Error("Fg black equals Fg red")
+	}
+
+	if fgblack1.Equal(bgred) {
+		t.Error("Fg black equals Bg red")
+	}
+
+}
