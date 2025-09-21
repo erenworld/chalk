@@ -54,6 +54,19 @@ const (
 	FgWhite
 )
 
+// Foreground Hi-Intensity text colors
+const (
+	FgHiBlack Attribute = iota + 90
+	FgHiRed
+	FgHiGreen
+	FgHiYellow
+	FgHiBlue
+	FgHiMagenta
+	FgHiCyan
+	FgHiWhite
+)
+
+// Background colors
 const (
 	BgBlack Attribute = iota + 40
 	BgRed
@@ -64,6 +77,19 @@ const (
 	BgCyan
 	BgWhite
 )
+
+// Background Hi-Intensity text colors
+const (
+	BgHiBlack Attribute = iota + 100
+	BgHiRed
+	BgHiGreen
+	BgHiYellow
+	BgHiBlue
+	BgHiMagenta
+	BgHiCyan
+	BgHiWhite
+)
+
 
 func New(value ...Attribute) *Color {
 	c := &Color{params: make([]Attribute, 0)}
