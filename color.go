@@ -168,10 +168,9 @@ func printColor(format string, p Attribute, a ...interface{}) {
 	// If no arguments (a...) are given, it treats format as the text itself.
 	if len(a) == 0 {
 		c.Print(format)
-		return
+	} else {
+		c.Printf(format, a...)
 	}
-	
-	c.Printf(format, a...)
 }
 
 func printString(format string, p Attribute, a ...interface{}) string {
