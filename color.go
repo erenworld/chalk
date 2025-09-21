@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/shiena/ansicolor"
-	"github.com/robertkrimen/isatty"
+	"github.com/mattn/go-isatty"
 )
 
 const escape = "\x1b"
@@ -19,7 +19,7 @@ var Output io.Writer = ansicolor.NewAnsiColorWriter(os.Stdout)
 
 // This is a global variable and affects all colors.
 // For more control over each color use the method DisableColor() individually.
-var NoColor = !isatty.Check(os.Stdout.Fd())
+var NoColor = !isatty.IsTerminal(os.Stdout.Fd())
 
 type Color struct {
 	params  []Attribute
