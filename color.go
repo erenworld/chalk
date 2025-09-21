@@ -264,3 +264,28 @@ func (c *Color) isNoColorSet() bool {
 func boolPtr(v bool) *bool {
 	return &v
 }
+
+// Equals returns a boolean value indicating whether two colors are equals.
+func (c *Color) Equal(c2 *Color) bool {
+	if len(c.params) != len(c2.params) {
+		return false
+	}
+
+	for _, attr := range c.params {
+		if !c2.hasAttr(attr) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (c *Color) hasAttr(a Attribute) bool {
+	for _, attr := range c.params {
+		if attr == a {
+			return true
+		}
+	}
+
+	return false
+}
