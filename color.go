@@ -14,18 +14,23 @@ import (
 
 const escape = "\x1b"
 
-// Output defines the standard output of the print functions. 
-// Any io.Writer can be used.
-var Output io.Writer = colorable.NewColorableStdout()
 
 // This is a global variable and affects all colors.
 // For more control over each color use the method DisableColor() individually.
-var NoColor = !isatty.IsTerminal(os.Stdout.Fd()) || os.Getenv("TERM") == "dumb"
+var (
+	NoColor = !isatty.IsTerminal(os.Stdout.Fd()) || os.Getenv("TERM") == "dumb"
+	
+	// Output defines the standard output of the print functions. 
+	// Any io.Writer can be used.
+	Output io.Writer = colorable.NewColorableStdout()
+	
+	// colorsCache is used to reduce the count of created Color objects and
+	// allows to reuse already created objects with required Attribute.
+	colorsCache = make(map[Attribute]*Color)
+	colorsCacheMu = new(sync.Mutex) // protects colorsCache
+	
+) 
 
-// colorsCache is used to reduce the count of created Color objects and
-// allows to reuse already created objects with required Attribute.
-var colorsCache = make(map[Attribute]*Color)
-var colorsCacheMu = new(sync.Mutex) // protects colorsCache
 
 type Color struct {
 	params  []Attribute
@@ -205,15 +210,21 @@ func (c *Color) Println(a ...interface{}) (n int, err error) {
 }
 
 func (c *Color) PrintFunc() func(a ...interface{}) {
-	return func(a ...interface{}) { c.Print(a...) }
+	return func(a ...interface{}) { 
+		c.Print(a...) 
+	}
 }
 
 func (c *Color) PrintfFunc() func(format string, a ...interface{}) {
-	return func(format string, a ...interface{}) { c.Printf(format, a...) }
+	return func(format string, a ...interface{}) { 
+		c.Printf(format, a...) 
+	}
 }
 
 func (c *Color) PrintlnFunc() func(a ...interface{}) {
-	return func(a ...interface{}) { c.Println(a...) }
+	return func(a ...interface{}) { 
+		c.Println(a...) 
+	}
 }
 
 func (c *Color) SprintFunc() func(a ...interface{}) string {
@@ -341,4 +352,66 @@ func (c *Color) hasAttr(a Attribute) bool {
 	}
 
 	return false
+}
+
+func (c *Color) setWriter(w io.Writer) *Color {
+	if c.isNoColorSet() {
+		return c
+	}
+
+	fmt.Fprint(w, c.format())
+	return c
+}
+
+func (c *Color) unsetWriter(w io.Writer) {
+	if c.isNoColorSet() {
+		return
+	}
+
+	if NoColor {
+		return 
+	}
+
+	fmt.Fprintf(w, "%s[%dm", escape, Reset)
+} 
+
+// On Windows, users should wrap w with colorable.NewColorable() if w is of
+// type *os.File.
+func (c *Color) Fprint(w io.Writer, a ...interface{}) (n int, err error) {
+	c.setWriter(w)
+	defer c.unsetWriter(w)
+
+	return fmt.Fprint(w, a...)
+}
+
+func (c *Color) Fprintf(w io.Writer, format string, a ...interface{}) (n int, err error) {
+	c.setWriter(w)
+	defer c.unsetWriter(w)
+
+	return fmt.Fprintf(w, format, a...)
+}
+
+func (c *Color) Fprintln(w io.Writer, a ...interface{}) (n int, err error) {
+	c.setWriter(w)
+	defer c.unsetWriter(w)
+
+	return fmt.Fprintln(w, a...)
+}
+
+func (c *Color) FprintFunc() func(w io.Writer, a ...interface{}) {
+	return func(w io.Writer, a ...interface{}) {
+		c.Fprint(w, a...)
+	}
+}
+
+func (c *Color) FprintfFunc() func(w io.Writer, format string, a ...interface{}) {
+	return func(w io.Writer, format string, a ...interface{}) {
+		c.Fprintf(w, format, a...)
+	}
+}
+
+func (c *Color) FprintlnFunc() func(w io.Writer, a ...interface{}) {
+	return func(w io.Writer, a ...interface{}) {
+		c.Fprintln(w, a...)
+	}
 }
