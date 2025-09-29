@@ -182,6 +182,9 @@ func TestColorVisual(t *testing.T) {
 	notice := New(FgBlue).FprintFunc()
 	notice(os.Stderr, "just a blue error")
 
+	// success := color.New(color.Bold, color.FgGreen).FprintlnFunc()
+	// success(myWriter, "Don't forget this...")
+
 	// Fifth Visual Test
 	fmt.Println()
 
