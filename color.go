@@ -23,6 +23,9 @@ var (
 	// Output defines the standard output of the print functions. 
 	// Any io.Writer can be used.
 	Output io.Writer = colorable.NewColorableStdout()
+
+	// Error defines a color support for os.Stderr 
+	Error io.Writer = colorable.NewColorableStderr()
 	
 	// colorsCache is used to reduce the count of created Color objects and
 	// allows to reuse already created objects with required Attribute.
@@ -30,7 +33,6 @@ var (
 	colorsCacheMu = new(sync.Mutex) // protects colorsCache
 	
 ) 
-
 
 type Color struct {
 	params  []Attribute
