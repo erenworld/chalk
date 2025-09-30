@@ -375,6 +375,22 @@ func (c *Color) unsetWriter(w io.Writer) {
 	fmt.Fprintf(w, "%s[%dm", escape, Reset)
 } 
 
+// Sprint is just like Print, but returns a string instead of printing it.
+func (c *Color) Sprint(a ...interface{}) string {
+	return c.wrap(fmt.Sprint(a...))
+}
+
+// Sprintln is just like Println, but returns a string instead of printing it.
+func (c *Color) Sprintln(a ...interface{}) string {
+	return c.wrap(fmt.Sprintln(a...))
+}
+
+// Sprintf is just like Printf, but returns a string instead of printing it.
+func (c *Color) Sprintf(format string, a ...interface{}) string {
+	return c.wrap(fmt.Sprintf(format, a...))
+}
+
+
 // On Windows, users should wrap w with colorable.NewColorable() if w is of
 // type *os.File.
 func (c *Color) Fprint(w io.Writer, a ...interface{}) (n int, err error) {
