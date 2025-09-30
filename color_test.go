@@ -39,22 +39,18 @@ func TestColor(t *testing.T) {
 		{text: "hcyan", code: FgHiCyan},
 		{text: "hwhite", code: FgHiWhite},
 	}
-
+	
 	for _, c := range testColors {
-		New(c.code).Print(c.text)
-
-		line, _ := rb.ReadString('\n')
-
+		line := New(c.code).Sprintf("%s", c.text)
 		scannedLine := fmt.Sprintf("%q", line)
 		colored := fmt.Sprintf("\x1b[%dm%s\x1b[0m", c.code, c.text)
 		escapedForm := fmt.Sprintf("%q", colored)
-
-		fmt.Printf("%s\t: %s\n", c.text, line)
-
+	
 		if scannedLine != escapedForm {
 			t.Errorf("Expecting %s, got '%s'\n", escapedForm, scannedLine)
 		}
 	}
+	
 }
 
 func TestNoColor(t *testing.T) {
