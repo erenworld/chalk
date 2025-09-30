@@ -18,7 +18,7 @@ const escape = "\x1b"
 // This is a global variable and affects all colors.
 // For more control over each color use the method DisableColor() individually.
 var (
-	NoColor = !isatty.IsTerminal(os.Stdout.Fd()) || os.Getenv("TERM") == "dumb"
+	NoColor = (!isatty.IsTerminal(os.Stdout.Fd()) && !isatty.IsCygwinTerminal(os.Stdout.Fd())) || os.Getenv("TERM") == "dumb" 
 	
 	// Output defines the standard output of the print functions. 
 	// Any io.Writer can be used.
