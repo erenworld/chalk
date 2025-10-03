@@ -155,6 +155,16 @@ func Magenta(format string, a ...interface{}) { printColor(format, FgMagenta, a.
 func Cyan(format string, a ...interface{})    { printColor(format, FgCyan, a...) }
 func White(format string, a ...interface{})   { printColor(format, FgWhite, a...) }
 
+func HiBlack(format string, a ...interface{}) { printColor(format, FgHiBlack, a...) }
+func HiRed(format string, a ...interface{}) { printColor(format, FgHiRed, a...) }
+func HiGreen(format string, a ...interface{}) { printColor(format, FgHiGreen, a...) }
+func HiYellow(format string, a ...interface{}) { printColor(format, FgHiYellow, a...) }
+func HiBlue(format string, a ...interface{}) { printColor(format, FgHiBlue, a...) }
+func HiMagenta(format string, a ...interface{}) { printColor(format, FgHiMagenta, a...) }
+func HiCyan(format string, a ...interface{}) { printColor(format, FgCyan, a...) }
+func HiWhite(format string, a ...interface{}) { printColor(format, FgHiWhite, a...) }
+
+
 func (c *Color) Bold() *Color {
 	c.Add(Bold)
 	return c
