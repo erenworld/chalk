@@ -18,7 +18,7 @@ const escape = "\x1b"
 // This is a global variable and affects all colors.
 // For more control over each color use the method DisableColor() individually.
 var (
-	NoColor = (!isatty.IsTerminal(os.Stdout.Fd()) && !isatty.IsCygwinTerminal(os.Stdout.Fd())) || os.Getenv("TERM") == "dumb" 
+    NoColor = (!isatty.IsTerminal(os.Stdout.Fd()) && !isatty.IsCygwinTerminal(os.Stdout.Fd())) || os.Getenv("TERM") == "dumb"
 	
 	// Output defines the standard output of the print functions. 
 	// Any io.Writer can be used.
@@ -163,6 +163,15 @@ func HiBlue(format string, a ...interface{}) { printColor(format, FgHiBlue, a...
 func HiMagenta(format string, a ...interface{}) { printColor(format, FgHiMagenta, a...) }
 func HiCyan(format string, a ...interface{}) { printColor(format, FgCyan, a...) }
 func HiWhite(format string, a ...interface{}) { printColor(format, FgHiWhite, a...) }
+
+func HiBlackString(format string, a ...interface{}) string { return printString(format, FgHiBlack, a...) }
+func HiRedString(format string, a ...interface{}) string { return printString(format, FgHiRed, a...) }
+func HiGreenString(format string, a ...interface{}) string { return printString(format, FgHiGreen, a...) }
+func HiYellowString(format string, a ...interface{}) string { return printString(format, FgHiYellow, a...) }
+func HiBlueString(format string, a ...interface{}) string { return printString(format, FgHiBlue, a...) }
+func HiMagentaString(format string, a ...interface{}) string { return printString(format, FgHiMagenta, a...) }
+func HiCyanString(format string, a ...interface{}) string { return printString(format, FgHiCyan, a...) }
+func HiWhiteString(format string, a ...interface{}) string { return printString(format, FgHiWhite, a...) }
 
 
 func (c *Color) Bold() *Color {
