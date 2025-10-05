@@ -1,4 +1,4 @@
-module chalk
+module github.com/erenworld/chalk
 
 go 1.24.2
 
