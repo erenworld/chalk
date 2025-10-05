@@ -14,7 +14,6 @@ import (
 
 const escape = "\x1b"
 
-
 // This is a global variable and affects all colors.
 // For more control over each color use the method DisableColor() individually.
 var (
@@ -34,6 +33,8 @@ var (
 	
 ) 
 
+// Color represents a color configuration, including its
+// attributes and an optional flag for disabling color output.
 type Color struct {
 	params  []Attribute
 	noColor *bool
@@ -55,6 +56,7 @@ const (
 	CrossedOut
 )
 
+// Foreground text colors
 const (
 	FgBlack Attribute = iota + 30
 	FgRed
@@ -102,6 +104,7 @@ const (
 	BgHiWhite
 )
 
+// Caching method for storing the color selected by the user.
 func getCachedColor(p Attribute) *Color {
 	colorsCacheMu.Lock()
 	defer colorsCacheMu.Unlock()
