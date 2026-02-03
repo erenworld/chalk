@@ -10,6 +10,8 @@ chalk is a lightweight Go package for styling terminal output using ANSI colors 
 go get github.com/erenworld/chalk
 ```
 
+> Please note that this is a clone of Fatih arslan's project. All credit goes to him.
+
 ### Features
 * Foreground and background colors (FgRed, BgBlue, etc...)
 * High-intensity colors (FgHiRed, FgHiBlue, etc.)
